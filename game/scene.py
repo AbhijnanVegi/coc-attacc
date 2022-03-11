@@ -2,13 +2,16 @@ from colorama import init, Fore, Back, Style
 import sys
 import subprocess as sp
 import numpy as np
+import math
 
 from game.game_object import GameObject
 
 
 class Scene:
     def __init__(self, width, height):
-        self.frame = np.full((height, width), Back.GREEN + " " + Back.RESET, dtype='object')
+        self.frame = np.full(
+            (height, width), Back.GREEN + " " + Back.RESET, dtype="object"
+        )
         self.height = height
         self.width = width
         self.window_should_close = False
@@ -32,4 +35,6 @@ class Scene:
         sp.call("clear", shell=True)
 
     def reset(self):
-        self.frame = np.full((self.height, self.width), Back.GREEN + " " + Back.RESET, dtype='object')
+        self.frame = np.full(
+            (self.height, self.width), Back.GREEN + " " + Back.RESET, dtype="object"
+        )

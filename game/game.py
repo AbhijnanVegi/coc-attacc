@@ -1,58 +1,133 @@
 import time
 import numpy as np
 from colorama import init, Fore, Back, Style
+import sys
+import pickle
+import json
 
+from game.colour_object import ColourObject
 from game.input import Get,input_to
 from game.scene import Scene
 from game.game_object import GameObject
 from game.building import TownHall, Wall, Hut, Cannon
 from game.spawner import Spawner
+from game.sprites import Barbarian, King
+from game.spells import Rage, Heal
 
 class Game:
     def __init__(self):
         self.scene = Scene(120,30)
         self.get = Get()
         self.frame_rate = 1/60
-        self.last_frame_time = 0
+        self.last_frame_time = time.time()
+        
         self.buildings = []
+        self.walls = []
+        self.spawners = []
+        
+        self.max_units = 10
+        self.units = []
+        self.king = None
+        
+        self.spells = []
+        self.effects = {
+            "speed" : 1,
+            "damage" : 1,
+            "rate" : 1,
+            "heal" : 1,
+        }
+        
+        self.frames = []
+
         self.init()
-        self.effects = []
 
     def init(self):
-        self.buildings.append(TownHall(self, (5,50)))
-        self.buildings.append(Spawner(self, (10,100)))
-        self.buildings.append(Wall(self, (10,10)))
-        self.buildings.append(Wall(self, (10,11)))
-        self.buildings.append(Wall(self, (11,11)))
-        self.buildings.append(Hut(self, (10,20)))
-        self.buildings.append(Cannon(self, (10,30)))
+        # self.spawners.append(Spawner(self, (10,100)))
+
+        # self.buildings.append(TownHall(self, (5,50)))
+        # self.walls.append(Wall(self, (5,54)))
+        # self.walls.append(Wall(self, (6,54)))
+        # self.walls.append(Wall(self, (7,54)))
+        # self.buildings.append(Hut(self, (10,20)))
+        # self.buildings.append(Cannon(self, (10,30)))
+
+        # self.king = King(self, (20, 50))
+
+        # self.spells.append(Rage(self, 10))
+        # self.spells.append(Heal(self, 5))
+        with open('levels/1.json', 'r') as f:
+            level = json.load(f)
+        for building in level["buildings"]:
+            if building["type"] == "th":
+                self.buildings.append(TownHall(self, (building["location"][0], building["location"][1])))
+            elif building["type"] == "hut":
+                self.buildings.append(Hut(self, (building["location"][0], building["location"][1])))
+            elif building["type"] == "cannon":
+                self.buildings.append(Cannon(self, (building["location"][0], building["location"][1])))
+        
+        for wall in level["walls"]:
+            for i in range(wall["length"]):
+                self.walls.append(Wall(self, (wall["location"][0] + i*wall["direction"][0], wall["location"][1] + i*wall["direction"][1])))
+        
+        for spawner in level["spawners"]:
+            self.spawners.append(Spawner(self, (spawner[0], spawner[1])))
+
+        self.max_units = level["troops"]
+        self.king = King(self, (level["king"]["location"][0], level["king"]["location"][1]))
         ...
 
 
     def update(self):
+        
         for obj in self.buildings:
             obj.update()
+        for spawner in self.spawners:
+            spawner.update()
+        for wall in self.walls:
+            wall.update()
+        for unit in self.units:
+            unit.update()
+        if self.king:
+            self.king.update()
 
     def process_input(self):
-        i = input_to(self.get)
+        i = input_to(self.get, timeout=0.05)
         if (i == 'q'):
             self.scene.window_should_close = True
+        
+        if i in ['w','a','s','d',' ']:
+            if self.king:
+                self.king.handle_inp(i)
+
+        if i in ['1','2','3']:
+            try:
+                if self.max_units:
+                    self.spawners[int(i)-1].spawn_barb()
+                    self.max_units -= 1
+            except:
+                ...
+        if i in ['4','5']:
+            try:
+                self.spells[int(i) - 4].use()
+            except Exception as e:
+                ...
 
     def run(self):
         while not self.scene.window_should_close:
             
-            i = input_to(self.get)
-            if (i == 'q'):
-                self.scene.window_should_close = True
-
             while not (time.time() - self.last_frame_time) > self.frame_rate:
                 pass
-
+            self.effects_update()
             self.process_input()
             self.scene.reset()
             self.update()
             self.scene.clear()
             self.scene.render()
+            self.frames.append(self.scene.frame)
+            end, win = self.check_game_end()
+            if (end):
+                self.end(win)
+                break
             self.last_frame_time = time.time()
 
             
@@ -60,3 +135,50 @@ class Game:
     def test(self):
         self.update()
         self.scene.render()
+
+    def remove_object(self,object: ColourObject):
+        try:
+            self.buildings.remove(object)
+            return
+        except:
+            ...
+        try:
+            self.walls.remove(object)
+            return
+        except:
+            ...
+        try:
+            self.units.remove(object)
+            return
+        except:
+            ...
+        if (object == self.king):
+            self.king = None
+
+    def check_game_end(self)->tuple:
+        if self.buildings == []:
+            return True, True
+        elif not self.max_units and self.units == [] and not self.king:
+            return True, False
+        else:
+            return False, None
+
+    def end(self, win:bool):
+        if win:
+            print("You win!")
+        else:
+            print("Game Over!")
+        sys.stdout.write("Enter name of replay: ")
+        loc = input()
+        with open('replays/' + loc+'.replay','wb') as f:
+            pickle.dump(self.frames, f)
+        ...
+
+    def effects_update(self):
+        self.effects["speed"] = 1
+        self.effects["damage"] = 1
+        self.effects["rate"] = 1
+        self.effects["heal"] = 1
+
+        for spell in self.spells:
+            spell.update()

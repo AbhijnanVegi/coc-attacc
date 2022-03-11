@@ -1,8 +1,11 @@
 import numpy as np
 from colorama import Fore, Back
+import sys
+import time
 
 from game.colour_object import ColourObject
-from game.config import CNN_RANGE, TH_HP, WALL_HP, HUT_HP, CNN_HP, CNN_DMG, CNN_RANGE
+from game.config import CNN_RANGE, CNN_RATE, TH_HP, WALL_HP, HUT_HP, CNN_HP, CNN_DMG, CNN_RANGE
+from game.utils import get_nearest_object, get_distance
 
 class TownHall(ColourObject):
     def __init__(self, game, position: tuple):
@@ -39,9 +42,22 @@ class Cannon(ColourObject):
         self.last_shot = 0
         self.range = CNN_RANGE
         self.damage = CNN_DMG
+        self.rate = CNN_RATE
 
+    def attack(self):
+        if (time.time() - self.last_shot) < self.rate:
+            return False
+        nearest = get_nearest_object(self.game.units + [self.game.king], (self.position[0] + self.size[0]/2, self.position[1] + self.size[1]/2))
+        if not nearest:
+            return False
+        if (get_distance((self.position[0]+self.size[0]/2, self.position[1]+self.size[1]/2), nearest.position) < self.range):
+            nearest.health -= self.damage
+            self.last_shot = time.time()
+            return True
+        return False
 
-
-    
-        
+    def update(self):
+        if (self.attack()):
+            return super().update(colour=Fore.YELLOW)
+        super().update()
 
