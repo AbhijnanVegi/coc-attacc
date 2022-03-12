@@ -4,6 +4,7 @@ from colorama import init, Fore, Back, Style
 import sys
 import pickle
 import json
+import math
 
 from game.colour_object import ColourObject
 from game.input import Get,input_to
@@ -55,7 +56,9 @@ class Game:
 
         # self.spells.append(Rage(self, 10))
         # self.spells.append(Heal(self, 5))
-        with open('levels/1.json', 'r') as f:
+        lvl = input("Enter level to load: ")
+
+        with open('levels/'+lvl+'.json', 'r') as f:
             level = json.load(f)
         for building in level["buildings"]:
             if building["type"] == "th":
@@ -112,6 +115,19 @@ class Game:
             except Exception as e:
                 ...
 
+    def show_hud(self):
+
+        def format_hp(hp):
+            count = math.ceil(hp/25)
+            return '█'*count + ' '*(10-count)
+
+        print(Fore.YELLOW + "Troops: " + str(self.max_units) + Fore.RESET, end='  ')
+        if self.king:
+            print("King Health: " + self.king.colour + format_hp(self.king.health) + Fore.RESET)
+        else:
+            print("King Health: " + Fore.RED + "DEAD" + Fore.RESET)
+        print()
+
     def run(self):
         while not self.scene.window_should_close:
             
@@ -122,6 +138,7 @@ class Game:
             self.scene.reset()
             self.update()
             self.scene.clear()
+            self.show_hud()
             self.scene.render()
             self.frames.append(self.scene.frame)
             end, win = self.check_game_end()

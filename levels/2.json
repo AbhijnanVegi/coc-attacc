@@ -1,0 +1,134 @@
+{
+    "buildings": [
+        {
+            "type": "hut",
+            "location": [
+                20,
+                50
+            ]
+        },
+        {
+            "type": "hut",
+            "location": [
+                15,
+                25
+            ]
+        },
+        {
+            "type": "hut",
+            "location": [
+                17,
+                60
+            ]
+        },
+        {
+            "type": "hut",
+            "location": [
+                5,
+                75
+            ]
+        },
+        {
+            "type": "hut",
+            "location": [
+                26,
+                15
+            ]
+        },
+        {
+            "type": "th",
+            "location": [
+                10,
+                40
+            ]
+        },
+        {
+            "type": "cannon",
+            "location": [
+                10,
+                70
+            ]
+        },
+        {
+            "type": "cannon",
+            "location": [
+                13,
+                40
+            ]
+        },
+        {
+            "type": "cannon",
+            "location": [
+                20,
+                60
+            ]
+        }
+    ],
+    "walls": [
+        {
+            "location": [
+                8,
+                38
+            ],
+            "direction": [
+                1,
+                0
+            ],
+            "length": 8
+        },
+        {
+            "location": [
+                8,
+                38
+            ],
+            "direction": [
+                0,
+                1
+            ],
+            "length": 8
+        },
+        {
+            "location": [
+                16,
+                38
+            ],
+            "direction": [
+                0,
+                1
+            ],
+            "length": 8
+        },
+        {
+            "location": [
+                8,
+                46
+            ],
+            "direction": [
+                1,
+                0
+            ],
+            "length": 9
+        }
+    ],
+    "spawners": [
+        [
+            4,
+            50
+        ],
+        [
+            13,
+            10
+        ],
+        [
+            15,
+            100
+        ]
+    ],
+    "king": {
+        "location": [
+            25,
+            50
+        ]
+    },
+    "troops": 25
+}

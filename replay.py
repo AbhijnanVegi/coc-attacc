@@ -7,7 +7,7 @@ class Replay:
     def __init__(self, frames):
         self.frame = None
         self.frames = frames
-        self.frame_rate = 1/60
+        self.frame_rate = 1/60 + 0.1
         self.last_frame_time = time.time()
         self.frame_count = 0
 
