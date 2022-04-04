@@ -19,6 +19,11 @@ from game.config import (
     BARB_RATE,
     BARB_SPEED,
     BARB_RANGE,
+    ARCH_HP,
+    ARCH_DAMAGE,
+    ARCH_RATE,
+    ARCH_SPEED,
+    ARCH_RANGE,
     KING_HP,
     KING_DAMAGE,
     KING_RANGE,
@@ -86,7 +91,6 @@ class AutoAttacker(Attacker):
             ncell = get_nearest_pos(nearest, self.position)
             if not self._in_range(ncell):
                 pos = self._move(nearest_cell)
-                print(pos,file=sys.stderr)
                 if not self.aerial:
                     for wall in self.game.walls:
                         if pos == wall.position:
@@ -127,12 +131,15 @@ class Barbarian(AutoAttacker):
         return self.game.buildings
 
 
-# class Archer(AutoAttacker):
-#     def __init__(self,game, position:tuple):
-#         obj = np.array([[Back.MAGENTA + "^" + Fore.RESET + Back.RESET]], dtype="object")
-#         super().__init__(
-#             game, position, obj,
-#         )
+class Archer(AutoAttacker):
+    def __init__(self,game, position:tuple):
+        obj = np.array([[Back.MAGENTA + "^" + Fore.RESET + Back.RESET]], dtype="object")
+        super().__init__(
+            game, position, obj, ARCH_HP, ARCH_DAMAGE, ARCH_RATE, ARCH_SPEED, ARCH_RANGE
+        )
+
+    def _interests(self):
+        return self.game.buildings
 
 
 class King(Attacker):

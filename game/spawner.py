@@ -3,7 +3,7 @@ from colorama import Fore, Back
 import sys
 
 from game.game_object import GameObject
-from game.sprites import Barbarian
+from game.sprites import Archer, Barbarian
 
 class Spawner(GameObject):
     def __init__(self, game, position: tuple):
@@ -12,5 +12,5 @@ class Spawner(GameObject):
         self.game = game
 
     def spawn_barb(self):
-        self.game.units.append(Barbarian(self.game, self.position))
+        self.game.units.append(Archer(self.game, self.position))
 
