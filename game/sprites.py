@@ -2,6 +2,7 @@ import time
 from colorama import Fore, Back
 import numpy as np
 import sys
+from game.building import Cannon
 
 from game.game_object import GameObject
 from game.colour_object import ColourObject
@@ -14,6 +15,11 @@ from game.utils import (
 )
 
 from game.config import (
+    BAL_DAMAGE,
+    BAL_HP,
+    BAL_RANGE,
+    BAL_RATE,
+    BAL_SPEED,
     BARB_HP,
     BARB_DAMAGE,
     BARB_RATE,
@@ -140,6 +146,17 @@ class Archer(AutoAttacker):
 
     def _interests(self):
         return self.game.buildings
+
+class Balloon(AutoAttacker):
+    def __init__(self,game, position:tuple):
+        obj = np.array([[Back.BLACK + "*" + Fore.RESET + Back.RESET]], dtype="object")
+        super().__init__(
+            game, position, obj, BAL_HP, BAL_DAMAGE, BAL_RATE, BAL_SPEED, BAL_RANGE, aerial=True
+        )
+
+    def _interests(self):
+        defenses = [building for building in self.game.buildings if isinstance(building, Cannon) ]
+        return defenses if defenses else self.game.buildings
 
 
 class King(Attacker):
