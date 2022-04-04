@@ -1,5 +1,6 @@
 import numpy as np
 from colorama import Fore, Back
+import sys
 
 from game.game_object import GameObject
 from game.sprites import Barbarian

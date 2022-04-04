@@ -27,14 +27,14 @@ def get_nearest_pos(object: GameObject, position : tuple):
     if position[0] <= object.position[0]:
         col = 0
     elif position[0] >= object.position[0] + object.size[0]:
-        col = object.size[0]
+        col = object.size[0] - 1
     elif position[0] > object.position[0] and position[0] < object.position[0] + object.size[0]:
         col = position[0] - object.position[0]
 
     if position[1] <= object.position[1]:
         row = 0
     elif position[1] >= object.position[1] + object.size[1]:
-        row = object.size[1]
+        row = object.size[1] - 1
     elif position[1] > object.position[1] and position[1] < object.position[1] + object.size[1]:
         row = position[1] - object.position[1]
     
