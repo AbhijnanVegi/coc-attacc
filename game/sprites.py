@@ -68,7 +68,7 @@ class Attacker(ColourObject):
             return True
         return False
 
-    def undo(self):
+    def _undo(self):
         self.position = self.last_pos
 
 
@@ -84,20 +84,23 @@ class AutoAttacker(Attacker):
             return super().update()
         if nearest is not None:
             ncell = get_nearest_pos(nearest, self.position)
-            print(nearest.position,self.position,nearest.size, ncell, file=sys.stderr)
             if not self._in_range(ncell):
-                wall = get_nearest_object(self.game.walls, self.position)
-                if check_collision(self, wall) and not self.aerial:
-                    self._attack(wall)
-                else:
-                    self._move(nearest_cell)
+                pos = self._move(nearest_cell)
+                print(pos,file=sys.stderr)
+                if not self.aerial:
+                    for wall in self.game.walls:
+                        if pos == wall.position:
+                            self._undo()
+                            self._attack(wall)
+                            break
             else:
                 self._attack(nearest)
+
         super().update()
 
     def _move(self, position: tuple):
         if (time.time() - self.last_move) < self.speed * self.game.effects["speed"]:
-            return
+            return self.position
         self.last_move = time.time()
         new_pos_X, new_pos_Y = self.position
         if (np.sign(position[0] - self.position[0])):
@@ -105,6 +108,7 @@ class AutoAttacker(Attacker):
         else:
             new_pos_Y = self.position[1] + np.sign(position[1] - self.position[1])
         self.position = (new_pos_X, new_pos_Y)
+        return self.position
 
     def _interests(self):
         ...
