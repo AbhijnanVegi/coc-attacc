@@ -12,7 +12,7 @@ from game.scene import Scene
 from game.game_object import GameObject
 from game.building import TownHall, Wall, Hut, Cannon
 from game.spawner import Spawner
-from game.sprites import Barbarian, King
+from game.sprites import Barbarian, King, Queen
 from game.spells import Rage, Heal
 
 class Game:
@@ -43,19 +43,7 @@ class Game:
         self.init()
 
     def init(self):
-        # self.spawners.append(Spawner(self, (10,100)))
 
-        # self.buildings.append(TownHall(self, (5,50)))
-        # self.walls.append(Wall(self, (5,54)))
-        # self.walls.append(Wall(self, (6,54)))
-        # self.walls.append(Wall(self, (7,54)))
-        # self.buildings.append(Hut(self, (10,20)))
-        # self.buildings.append(Cannon(self, (10,30)))
-
-        # self.king = King(self, (20, 50))
-
-        # self.spells.append(Rage(self, 10))
-        # self.spells.append(Heal(self, 5))
         lvl = input("Enter level to load: ")
 
         with open('levels/'+lvl+'.json', 'r') as f:
@@ -76,7 +64,14 @@ class Game:
             self.spawners.append(Spawner(self, (spawner[0], spawner[1])))
 
         self.max_units = level["troops"]
-        self.king = King(self, (level["king"]["location"][0], level["king"]["location"][1]))
+        champ = input("[K]ing or [Q]ueen? ")
+        if champ[0].lower() == 'k':
+            self.king = King(self, (level["king"]["location"][0], level["king"]["location"][1]))
+        elif champ[0].lower() == 'q':
+            self.king = Queen(self, (level["king"]["location"][0], level["king"]["location"][1]))
+        else:
+            print("Invalid champion")
+            sys.exit()
         ...
 
 

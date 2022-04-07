@@ -14,28 +14,7 @@ from game.utils import (
     check_inside,
 )
 
-from game.config import (
-    BAL_DAMAGE,
-    BAL_HP,
-    BAL_RANGE,
-    BAL_RATE,
-    BAL_SPEED,
-    BARB_HP,
-    BARB_DAMAGE,
-    BARB_RATE,
-    BARB_SPEED,
-    BARB_RANGE,
-    ARCH_HP,
-    ARCH_DAMAGE,
-    ARCH_RATE,
-    ARCH_SPEED,
-    ARCH_RANGE,
-    KING_HP,
-    KING_DAMAGE,
-    KING_RANGE,
-    KING_RATE,
-    KING_SPEED,
-)
+from game.config import *
 
 
 class Attacker(ColourObject):
@@ -59,7 +38,7 @@ class Attacker(ColourObject):
         self.last_attack = time.time()
         self.last_move = time.time()
         self.aerial = aerial
-        self.last_pos = (0,0)
+        self.last_pos = (0, 0)
 
     def update(self):
         self.health *= self.game.effects["heal"]
@@ -84,7 +63,6 @@ class Attacker(ColourObject):
 
 
 class AutoAttacker(Attacker):
-
     def update(self):
         self.last_pos = self.position
         nearest = get_nearest_object(self._interests(), self.position)
@@ -113,7 +91,7 @@ class AutoAttacker(Attacker):
             return self.position
         self.last_move = time.time()
         new_pos_X, new_pos_Y = self.position
-        if (np.sign(position[0] - self.position[0])):
+        if np.sign(position[0] - self.position[0]):
             new_pos_X = self.position[0] + np.sign(position[0] - self.position[0])
         else:
             new_pos_Y = self.position[1] + np.sign(position[1] - self.position[1])
@@ -131,14 +109,12 @@ class Barbarian(AutoAttacker):
             game, position, obj, BARB_HP, BARB_DAMAGE, BARB_RATE, BARB_SPEED, BARB_RANGE
         )
 
-
-
     def _interests(self):
         return self.game.buildings
 
 
 class Archer(AutoAttacker):
-    def __init__(self,game, position:tuple):
+    def __init__(self, game, position: tuple):
         obj = np.array([[Back.MAGENTA + "^" + Fore.RESET + Back.RESET]], dtype="object")
         super().__init__(
             game, position, obj, ARCH_HP, ARCH_DAMAGE, ARCH_RATE, ARCH_SPEED, ARCH_RANGE
@@ -147,37 +123,30 @@ class Archer(AutoAttacker):
     def _interests(self):
         return self.game.buildings
 
+
 class Balloon(AutoAttacker):
-    def __init__(self,game, position:tuple):
+    def __init__(self, game, position: tuple):
         obj = np.array([[Back.BLACK + "*" + Fore.RESET + Back.RESET]], dtype="object")
         super().__init__(
-            game, position, obj, BAL_HP, BAL_DAMAGE, BAL_RATE, BAL_SPEED, BAL_RANGE, aerial=True
+            game,
+            position,
+            obj,
+            BAL_HP,
+            BAL_DAMAGE,
+            BAL_RATE,
+            BAL_SPEED,
+            BAL_RANGE,
+            aerial=True,
         )
 
     def _interests(self):
-        defenses = [building for building in self.game.buildings if isinstance(building, Cannon) ]
+        defenses = [
+            building for building in self.game.buildings if isinstance(building, Cannon)
+        ]
         return defenses if defenses else self.game.buildings
 
 
-class King(Attacker):
-    def __init__(self, game, position):
-        obj = np.array(
-            [
-                [
-                    Back.YELLOW + "/" + Fore.RESET + Back.RESET,
-                    Back.YELLOW + "\\" + Fore.RESET + Back.RESET,
-                ],
-                [
-                    Back.YELLOW + "\\" + Fore.RESET + Back.RESET,
-                    Back.YELLOW + "/" + Fore.RESET + Back.RESET,
-                ],
-            ],
-            dtype="object",
-        )
-        super().__init__(
-            game, position, obj, KING_HP, KING_DAMAGE, KING_RATE, KING_SPEED, KING_RANGE
-        )
-
+class ControlAttacker(Attacker):
     def handle_inp(self, key):
         if key in ["w", "a", "s", "d"]:
             self._move(key)
@@ -185,21 +154,6 @@ class King(Attacker):
             self._attack()
 
     def _attack(self):
-        if (time.time() - self.last_attack) > self.rate:
-            self.last_attack = time.time()
-            for building in self.game.buildings + self.game.walls:
-                nearest = get_nearest_pos(building, self.position)
-                if (
-                    get_distance(
-                        (
-                            self.position[0] + self.size[0] / 2,
-                            self.position[1] + self.size[1] / 2,
-                        ),
-                        nearest,
-                    )
-                    < self.range
-                ):
-                    building.health -= self.damage * self.game.effects["damage"]
         ...
 
     def _move(self, key):
@@ -230,3 +184,95 @@ class King(Attacker):
                 for building in self.game.buildings + self.game.walls:
                     if check_inside(self, building):
                         self.position = (self.position[0], self.position[1] - 1)
+
+
+class King(ControlAttacker):
+    def __init__(self, game, position):
+        obj = np.array(
+            [
+                [
+                    Back.YELLOW + "/" + Fore.RESET + Back.RESET,
+                    Back.YELLOW + "\\" + Fore.RESET + Back.RESET,
+                ],
+                [
+                    Back.YELLOW + "\\" + Fore.RESET + Back.RESET,
+                    Back.YELLOW + "/" + Fore.RESET + Back.RESET,
+                ],
+            ],
+            dtype="object",
+        )
+        super().__init__(
+            game, position, obj, KING_HP, KING_DAMAGE, KING_RATE, KING_SPEED, KING_RANGE
+        )
+
+    def _attack(self):
+        if (time.time() - self.last_attack) > self.rate:
+            self.last_attack = time.time()
+            for building in self.game.buildings + self.game.walls:
+                nearest = get_nearest_pos(building, self.position)
+                if (
+                    get_distance(
+                        (
+                            self.position[0] + self.size[0] / 2,
+                            self.position[1] + self.size[1] / 2,
+                        ),
+                        nearest,
+                    )
+                    < self.range
+                ):
+                    building.health -= self.damage * self.game.effects["damage"]
+        ...
+
+
+class Queen(ControlAttacker):
+    def __init__(self, game, position):
+        obj = np.array(
+            [
+                [
+                    Back.MAGENTA + "/" + Fore.RESET + Back.RESET,
+                    Back.MAGENTA + "\\" + Fore.RESET + Back.RESET,
+                ],
+                [
+                    Back.MAGENTA + "\\" + Fore.RESET + Back.RESET,
+                    Back.MAGENTA + "/" + Fore.RESET + Back.RESET,
+                ],
+            ],
+            dtype="object",
+        )
+        super().__init__(
+            game,
+            position,
+            obj,
+            QUEEN_HP,
+            QUEEN_DAMAGE,
+            QUEEN_RATE,
+            QUEEN_SPEED,
+            QUEEN_RANGE,
+        )
+        self.aoe = QUEEN_AOE
+        self.last_direction = (0, 0)
+
+    def _attack(self):
+        if time.time() - self.last_attack < self.rate:
+            return
+
+        center = (
+            self.position[0] + self.size[0] / 2 + self.range * self.last_direction[0],
+            self.position[1] + self.size[1] / 2 + self.range * self.last_direction[1],
+        )
+
+        for building in self.game.buildings + self.game.walls:
+            nearest = get_nearest_pos(building, center)
+            if get_distance(center, nearest) < self.range:
+                building.health -= self.damage * self.game.effects["damage"]
+
+    def handle_inp(self, key):
+        if key == "w":
+            self.last_direction = (-1, 0)
+        elif key == "s":
+            self.last_direction = (1, 0)
+        elif key == "a":
+            self.last_direction = (0, -1)
+        elif key == "d":
+            self.last_direction = (0, 1)
+        super().handle_inp(key)
