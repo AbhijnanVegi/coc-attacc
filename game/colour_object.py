@@ -11,10 +11,10 @@ class ColourObject(GameObject):
         super().__init__(game, position, np.array(object))
         self.colour = Fore.GREEN
         self.max_health = health
-        self.health = health 
+        self.health = health
         self.template = object
 
-    def update(self,colour=None):
+    def update(self, colour=None):
         if self.health <= 0:
             return self.game.remove_object(self)
         if self.health > self.max_health:

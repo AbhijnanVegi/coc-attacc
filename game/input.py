@@ -4,6 +4,7 @@ import termios
 import tty
 import signal
 
+
 class Get:
     """Class to get input."""
 
@@ -21,6 +22,7 @@ class Get:
 
 class AlarmException(Exception):
     """Handling alarm exception."""
+
     pass
 
 
@@ -39,4 +41,3 @@ def input_to(getch, timeout=0.1):
         return text
     except AlarmException:
         signal.signal(signal.SIGALRM, signal.SIG_IGN)
- 

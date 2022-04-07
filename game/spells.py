@@ -1,8 +1,9 @@
 import time
 import sys
 
+
 class Spell:
-    def __init__(self,game, duration):
+    def __init__(self, game, duration):
         self.duration = duration
         self.start_time = None
         self.effects = {}
@@ -19,6 +20,7 @@ class Spell:
             for key in self.effects.keys():
                 self.game.effects[key] = self.effects[key]
 
+
 class Rage(Spell):
     def __init__(self, game, duration):
         super().__init__(game, duration)
@@ -34,6 +36,3 @@ class Heal(Spell):
         self.effects = {
             "heal": 1.5,
         }
-
-
-

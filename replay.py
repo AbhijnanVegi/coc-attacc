@@ -3,11 +3,12 @@ import sys
 import subprocess as sp
 import pickle
 
+
 class Replay:
     def __init__(self, frames):
         self.frame = None
         self.frames = frames
-        self.frame_rate = 1/60 + 0.1
+        self.frame_rate = 1 / 60 + 0.1
         self.last_frame_time = time.time()
         self.frame_count = 0
 
@@ -22,7 +23,6 @@ class Replay:
             self.last_frame_time = time.time()
             self.frame_count += 1
 
-
     def render(self):
         out = ""
         for row in self.frame:
@@ -31,9 +31,9 @@ class Replay:
             out += "\n"
         sys.stdout.write(out)
 
-if __name__=='__main__':
+
+if __name__ == "__main__":
     rep = input("Enter name of replay: ")
-    with open('replays/' + rep + '.replay', "rb") as f:
+    with open("replays/" + rep + ".replay", "rb") as f:
         replay = Replay(pickle.load(f))
     replay.run()
-
