@@ -168,7 +168,6 @@ class ControlAttacker(Attacker):
                     if check_inside(self, building):
                         self.position = (self.position[0] + 1, self.position[1])
         elif key == "s":
-            print(self.position, self.game.scene.height, file=sys.stderr)
             if self.position[0] < self.game.scene.height - self.size[0]:
                 self.position = (self.position[0] + 1, self.position[1])
                 for building in self.game.buildings + self.game.walls:
@@ -262,7 +261,6 @@ class Queen(ControlAttacker):
             self.position[0] + self.size[0] / 2 + self.range * self.last_direction[0],
             self.position[1] + self.size[1] / 2 + self.range * self.last_direction[1],
         )
-        print(self.position, center, file=sys.stderr)
 
         for building in self.game.buildings + self.game.walls:
             nearest = get_nearest_pos(building, center)

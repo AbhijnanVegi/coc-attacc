@@ -16,6 +16,8 @@ from game.sprites import Barbarian, King, Queen
 from game.spells import Rage, Heal
 
 
+
+
 class Game:
     def __init__(self):
         self.scene = Scene(120, 30)
@@ -27,9 +29,10 @@ class Game:
         self.walls = []
         self.spawners = []
 
-        self.max_units = 10
+        self.max_units = [10, 5, 3]
         self.units = []
         self.king = None
+        self.champ_type = None
 
         self.spells = []
         self.effects = {
@@ -41,14 +44,33 @@ class Game:
 
         self.frames = []
 
+        self.current_level = None
+        self.levels = []
+
         self.init()
 
     def init(self):
 
         lvl = input("Enter level to load: ")
+        self.current_level = 0
+        self.levels = self.load_levels(lvl)
+        champ = input("[K]ing or [Q]ueen? ")
+        if champ[0].lower() == "k":
+            self.champ_type = King
+        elif champ[0].lower() == "q":
+            self.champ_type = Queen
+        else:
+            print("Invalid champion")
+            sys.exit()
+        self.load_level(self.current_level)
 
-        with open("levels/" + lvl + ".json", "r") as f:
-            level = json.load(f)
+    def load_levels(self, lvl:str):
+        with open('levels/' + lvl + '.json', 'r') as f:
+            return json.load(f)
+
+    def load_level(self, lvl:int):
+        level = self.levels[lvl]
+        self.units = []
         for building in level["buildings"]:
             if building["type"] == "th":
                 self.buildings.append(
@@ -59,6 +81,12 @@ class Game:
                     Hut(self, (building["location"][0], building["location"][1]))
                 )
             elif building["type"] == "cannon":
+                self.buildings.append(
+                    Cannon(
+                        self, (building["location"][0], building["location"][1])
+                    )
+                )
+            elif building["type"] == "wt":
                 self.buildings.append(
                     WizardTower(
                         self, (building["location"][0], building["location"][1])
@@ -81,19 +109,9 @@ class Game:
             self.spawners.append(Spawner(self, (spawner[0], spawner[1])))
 
         self.max_units = level["troops"]
-        champ = input("[K]ing or [Q]ueen? ")
-        if champ[0].lower() == "k":
-            self.king = King(
-                self, (level["king"]["location"][0], level["king"]["location"][1])
-            )
-        elif champ[0].lower() == "q":
-            self.king = Queen(
-                self, (level["king"]["location"][0], level["king"]["location"][1])
-            )
-        else:
-            print("Invalid champion")
-            sys.exit()
-        ...
+        self.king = self.champ_type(self, (level["king"]["location"][0], level["king"]["location"][1]))
+
+        
 
     def update(self):
 
@@ -117,18 +135,14 @@ class Game:
             if self.king:
                 self.king.handle_inp(i)
 
-        if i in ["1", "2", "3"]:
+        if i in [str(i) for i in range(1, 10)]:
             try:
-                if self.max_units:
-                    self.spawners[int(i) - 1].spawn_barb()
-                    self.max_units -= 1
-            except:
-                ...
-        if i in ["4", "5"]:
-            try:
-                self.spells[int(i) - 4].use()
+                if self.max_units[int((int(i) - 1) / 3)]:
+                    self.spawners[int(i) % 3].spawn(int((int(i) - 1) / 3))
+                    self.max_units[int((int(i) - 1) / 3)] -= 1
             except Exception as e:
-                ...
+                print(e, file=sys.stderr)
+
 
     def show_hud(self):
         def format_hp(hp):
@@ -162,8 +176,8 @@ class Game:
             self.frames.append(self.scene.frame)
             end, win = self.check_game_end()
             if end:
-                self.end(win)
-                break
+                if self.end(win):
+                    break
             self.last_frame_time = time.time()
 
     def test(self):
@@ -192,20 +206,27 @@ class Game:
     def check_game_end(self) -> tuple:
         if self.buildings == []:
             return True, True
-        elif not self.max_units and self.units == [] and not self.king:
+        elif self.max_units == [] and self.units == [] and not self.king:
             return True, False
         else:
             return False, None
 
     def end(self, win: bool):
         if win:
-            print("You win!")
+            self.current_level += 1
+            print(self.current_level, len(self.levels), file=sys.stderr)
+            if self.current_level == len(self.levels):
+                print("You win!")
+            else:
+                self.load_level(self.current_level)
+                return False
         else:
             print("Game Over!")
         sys.stdout.write("Enter name of replay: ")
         loc = input()
         with open("replays/" + loc + ".replay", "wb") as f:
             pickle.dump(self.frames, f)
+        return True
         ...
 
     def effects_update(self):
