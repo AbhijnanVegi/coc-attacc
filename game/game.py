@@ -10,7 +10,7 @@ from game.colour_object import ColourObject
 from game.input import Get, input_to
 from game.scene import Scene
 from game.game_object import GameObject
-from game.building import TownHall, Wall, Hut, Cannon
+from game.building import TownHall, Wall, Hut, Cannon, WizardTower
 from game.spawner import Spawner
 from game.sprites import Barbarian, King, Queen
 from game.spells import Rage, Heal
@@ -60,7 +60,9 @@ class Game:
                 )
             elif building["type"] == "cannon":
                 self.buildings.append(
-                    Cannon(self, (building["location"][0], building["location"][1]))
+                    WizardTower(
+                        self, (building["location"][0], building["location"][1])
+                    )
                 )
 
         for wall in level["walls"]:

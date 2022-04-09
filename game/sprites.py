@@ -2,9 +2,8 @@ import time
 from colorama import Fore, Back
 import numpy as np
 import sys
-from game.building import Cannon
+from game.building import Defense
 
-from game.game_object import GameObject
 from game.colour_object import ColourObject
 from game.utils import (
     check_collision,
@@ -141,7 +140,7 @@ class Balloon(AutoAttacker):
 
     def _interests(self):
         defenses = [
-            building for building in self.game.buildings if isinstance(building, Cannon)
+            building for building in self.game.buildings if isinstance(building, Defense)
         ]
         return defenses if defenses else self.game.buildings
 
@@ -167,7 +166,8 @@ class ControlAttacker(Attacker):
                     if check_inside(self, building):
                         self.position = (self.position[0] + 1, self.position[1])
         elif key == "s":
-            if self.position[0] < self.game.scene.height - 1:
+            print(self.position, self.game.scene.height, file=sys.stderr)
+            if self.position[0] < self.game.scene.height - self.size[0]:
                 self.position = (self.position[0] + 1, self.position[1])
                 for building in self.game.buildings + self.game.walls:
                     if check_inside(self, building):
@@ -179,7 +179,7 @@ class ControlAttacker(Attacker):
                     if check_inside(self, building):
                         self.position = (self.position[0], self.position[1] + 1)
         elif key == "d":
-            if self.position[1] < self.game.scene.width - 1:
+            if self.position[1] < self.game.scene.width - self.size[1]:
                 self.position = (self.position[0], self.position[1] + 1)
                 for building in self.game.buildings + self.game.walls:
                     if check_inside(self, building):
@@ -260,6 +260,7 @@ class Queen(ControlAttacker):
             self.position[0] + self.size[0] / 2 + self.range * self.last_direction[0],
             self.position[1] + self.size[1] / 2 + self.range * self.last_direction[1],
         )
+        print(self.position, center, file=sys.stderr)
 
         for building in self.game.buildings + self.game.walls:
             nearest = get_nearest_pos(building, center)
