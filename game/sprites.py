@@ -140,7 +140,9 @@ class Balloon(AutoAttacker):
 
     def _interests(self):
         defenses = [
-            building for building in self.game.buildings if isinstance(building, Defense)
+            building
+            for building in self.game.buildings
+            if isinstance(building, Defense)
         ]
         return defenses if defenses else self.game.buildings
 

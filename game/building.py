@@ -37,7 +37,16 @@ class Hut(ColourObject):
 
 
 class Defense(ColourObject):
-    def __init__(self,game, position:tuple,obj:np.ndarray, hp:int, damage:int, rate:int, range:int):
+    def __init__(
+        self,
+        game,
+        position: tuple,
+        obj: np.ndarray,
+        hp: int,
+        damage: int,
+        rate: int,
+        range: int,
+    ):
         super().__init__(game, position, obj, hp)
         self.damage = damage
         self.rate = rate
@@ -51,7 +60,6 @@ class Defense(ColourObject):
         if self._attack():
             return super().update(colour=Fore.YELLOW)
         super().update()
-
 
 
 class Cannon(Defense):
@@ -90,9 +98,12 @@ class Cannon(Defense):
     def _interests(self):
         return [unit for unit in self.game.units if not unit.aerial] + [self.game.king]
 
+
 class WizardTower(Defense):
     def __init__(self, game, position):
-        obj = np.full((3,2), Back.LIGHTBLACK_EX + "%" + Fore.RESET + Back.RESET,dtype="object")
+        obj = np.full(
+            (3, 2), Back.LIGHTBLACK_EX + "%" + Fore.RESET + Back.RESET, dtype="object"
+        )
         super().__init__(game, position, obj, WT_HP, WT_DMG, WT_RATE, WT_RANGE)
 
     def _attack(self):
@@ -115,7 +126,9 @@ class WizardTower(Defense):
             < self.range
         ):
             for unit in self._interests():
-                if (abs(unit.position[0] - nearest.position[0]) <= 1) and (abs(unit.position[1] - nearest.position[1]) <= 1):
+                if (abs(unit.position[0] - nearest.position[0]) <= 1) and (
+                    abs(unit.position[1] - nearest.position[1]) <= 1
+                ):
                     unit.health -= self.damage
             self.last_shot = time.time()
             return True
