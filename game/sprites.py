@@ -251,6 +251,16 @@ class Queen(ControlAttacker):
             QUEEN_RANGE,
         )
         self.aoe = QUEEN_AOE
+
+        self.sp_damage = QUEEN_SP_DAMAGE
+        self.sp_range = QUEEN_SP_RANGE
+        self.sp_aoe = QUEEN_SP_AOE
+        self.last_sp = time.time()
+        self.sp_rate = QUEEN_SP_RATE
+        self.sp_q = False
+        self.sp_center = position
+
+
         self.last_direction = (0, 0)
 
     def _attack(self):
@@ -276,4 +286,29 @@ class Queen(ControlAttacker):
             self.last_direction = (0, -1)
         elif key == "d":
             self.last_direction = (0, 1)
+        elif key == "e":
+            self._super()
         super().handle_inp(key)
+
+    def _super(self):
+        if (time.time() - self.last_sp < self.sp_rate):
+            return
+        
+        self.sp_center = (
+            self.position[0] + self.size[0] / 2 + self.sp_range * self.last_direction[0],
+            self.position[1] + self.size[1] / 2 + self.sp_range * self.last_direction[1],
+        )
+        self.sp_q = True
+        self.last_sp = time.time()
+
+    def update(self):
+        if (self.sp_q and time.time() - self.last_sp > self.sp_rate):
+            self.sp_q = False
+            for building in self.game.buildings + self.game.walls:
+                nearest = get_nearest_pos(building, self.sp_center)
+                if get_distance(self.sp_center, nearest) < self.sp_aoe:
+                    building.health -= self.sp_damage * self.game.effects["damage"]
+        
+        super().update()
+
+

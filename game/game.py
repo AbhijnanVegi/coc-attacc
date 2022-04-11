@@ -131,7 +131,7 @@ class Game:
         if i == "q":
             self.scene.window_should_close = True
 
-        if i in ["w", "a", "s", "d", " "]:
+        if i in ["w", "a", "s", "d", " ", "e"]:
             if self.king:
                 self.king.handle_inp(i)
 
