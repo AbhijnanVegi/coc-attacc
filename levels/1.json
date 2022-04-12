@@ -58,10 +58,17 @@
                 ]
             },
             {
-                "type": "cannon",
+                "type": "wt",
                 "location": [
                     20,
                     60
+                ]
+            },
+            {
+                "type": "wt",
+                "location": [
+                    10,
+                    70
                 ]
             }
         ],
@@ -189,7 +196,7 @@
                 ]
             },
             {
-                "type": "cannon",
+                "type": "wt",
                 "location": [
                     13,
                     40
@@ -198,8 +205,202 @@
             {
                 "type": "cannon",
                 "location": [
+                    13,
+                    42
+                ]
+            },
+            {
+                "type": "cannon",
+                "location": [
                     20,
                     60
+                ]
+            },
+            {
+                "type": "wt",
+                "location": [
+                    10,
+                    70
+                ]
+            },
+            {
+                "type": "wt",
+                "location": [
+                    20,
+                    70
+                ]
+            }
+        ],
+        "walls": [
+            {
+                "location": [
+                    8,
+                    38
+                ],
+                "direction": [
+                    1,
+                    0
+                ],
+                "length": 8
+            },
+            {
+                "location": [
+                    8,
+                    38
+                ],
+                "direction": [
+                    0,
+                    1
+                ],
+                "length": 8
+            },
+            {
+                "location": [
+                    16,
+                    38
+                ],
+                "direction": [
+                    0,
+                    1
+                ],
+                "length": 8
+            },
+            {
+                "location": [
+                    8,
+                    46
+                ],
+                "direction": [
+                    1,
+                    0
+                ],
+                "length": 9
+            }
+        ],
+        "spawners": [
+            [
+                4,
+                55
+            ],
+            [
+                13,
+                13
+            ],
+            [
+                18,
+                100
+            ]
+        ],
+        "king": {
+            "location": [
+                25,
+                25
+            ]
+        },
+        "troops": [
+            10,
+            5,
+            3
+        ]
+    },
+    {
+        "buildings": [
+            {
+                "type": "hut",
+                "location": [
+                    20,
+                    50
+                ]
+            },
+            {
+                "type": "hut",
+                "location": [
+                    10,
+                    90
+                ]
+            },
+            {
+                "type": "hut",
+                "location": [
+                    15,
+                    10
+                ]
+            },
+            {
+                "type": "hut",
+                "location": [
+                    5,
+                    80
+                ]
+            },
+            {
+                "type": "hut",
+                "location": [
+                    7,
+                    75
+                ]
+            },
+            {
+                "type": "th",
+                "location": [
+                    10,
+                    40
+                ]
+            },
+            {
+                "type": "cannon",
+                "location": [
+                    15,
+                    77
+                ]
+            },
+            {
+                "type": "wt",
+                "location": [
+                    13,
+                    40
+                ]
+            },
+            {
+                "type": "cannon",
+                "location": [
+                    13,
+                    42
+                ]
+            },
+            {
+                "type": "cannon",
+                "location": [
+                    20,
+                    60
+                ]
+            },
+            {
+                "type": "wt",
+                "location": [
+                    10,
+                    70
+                ]
+            },
+            {
+                "type": "wt",
+                "location": [
+                    20,
+                    70
+                ]
+            },
+            {
+                "type": "wt",
+                "location": [
+                    10,
+                    80
+                ]
+            },
+            {
+                "type" :"cannon",
+                "location": [
+                    20,
+                    80
                 ]
             }
         ],

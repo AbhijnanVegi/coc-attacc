@@ -214,7 +214,6 @@ class Game:
     def end(self, win: bool):
         if win:
             self.current_level += 1
-            print(self.current_level, len(self.levels), file=sys.stderr)
             if self.current_level == len(self.levels):
                 print("You win!")
             else:
